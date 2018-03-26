@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>选项卡</title>
+    <link rel = "stylesheet" href = "css/style.css" />
+</head>
+<body>
+    <div id="tab" >
+        <div class="tab-tit">
+            <!--点击设置curId的值  如果curId等于0，第一个a添加cur类名，如果curId等于1，第二个a添加cur类名，以此类推。添加了cur类名，a就会改变样式 @click,:class ,v-show这三个是vue常用的指令或添加事件的方式-->
+            <a href="javascript:;" @click="curId=0" :class="{'cur':curId==0}">Demo1</a>
+            <a href="javascript:;" @click="curId=1" :class="{'cur':curId==1}">Demo2</a>
+            <a href="javascript:;" @click="curId=2" :class="{'cur':curId==2}">Demo3</a>
+            <a href="javascript:;" @click="curId=3" :class="{'cur':curId==3}">Demo4</a>
+        </div>
+        <div class="tab-con">
+            <!--根据curId的值显示div,如果curId等于0，第一个div显示，其它三个div不显示。如果curId等于1，第二个div显示，其它三个div不显示。以此类推-->
+            <div v-show="curId==0" class="div1">
+                <h3>欢迎来到食品区</h3>
+                <div class="div_DHL" >
+                    <span v-for = 'value in DHL_val'>{{value}}</span>
+                </div>
+                <div class="div-oustside" v-for ="(item,index) in food_value ">
+                    <div class="img">
+                        <img :src="item.pro_img" class="img">
+                    </div>
+                    <div class="value_div">  
+                        <h6>{{item.pro_name}}</h6>
+                        <p>{{item.pro_brand}}</p>
+                        <p>{{item.pro_place}}</p>  
+                    </div>
+                    <div class="price_div">
+                        {{item.pro_price}}
+                    </div>
+                    <div class="price_num">
+                        <div class="price_num_1" @click="item.pro_num>0?item.pro_num--:''">-</div>
+                        <input type="text" class="price_num_input" :style="parseInt(item.pro_num) > 0 ? {color: 'black'} : item.pro_num=0" v-model='item.pro_num'>
+                        <div class="price_num_2" @click='item.pro_num++'>+</div>
+                    </div>
+                    <div class="price_total">
+                        ￥{{item.pro_price*item.pro_num}}
+                    </div>
+                    <div class="caozuo"  @click="delete1">删除</div>
+                </div>
+                <div style="margin-left: 60px;">  
+                    <h4>合 计:</h4>
+                    <span class="hj">
+                        <p>共</p>
+                        <p style="color: red;font-size: 18px; margin-top: 15px;">{{food_total_price.ftn}}</p>
+                        <p>件商品，总价为：￥</p>
+                        <p style="color: red;font-size: 18px; margin-top: 15px;">{{food_total_price.ftp}}</p>
+                    </span>
+                </div>
+            </div>
+            <div v-show="curId==1" class="div1">
+                <h3>欢迎来到Demo2区</h3>
+                <div class="Demo2_outside" v-for ='(item,index) in cloes_val' >
+                    <div class="img_demo2">
+                        <img :src="item.pro_img" class="img_demo2">
+                    </div>
+                    <div class="pro_name_h">{{item.pro_name}}</div>
+                    <p>厂商:{{item.pro_brand}}</p>
+                    <p>产地:{{item.pro_place}}</p>
+                    <p>价格:{{item.pro_price}}</p>
+                    <button  @click='pro_sc(item.pro_img,item.pro_name,item.pro_brand,item.pro_place,item.pro_num,item.pro_price)'>
+                        <img src="img/xxk/sc.jpg" >
+                    </button>
+                    <!-- 添加组件并加上监听器 v-on 为监听器-->
+                    <list-button :item='item' v-on:cli1="pro_gw_zj">
+                        <!-- <img src="img/xxk/gouwuche.jpg"> -->
+                    </list-button>
+                </div>
+                
+            </div>
+            <div v-show="curId==2" class="div1">
+                <h3>欢迎来到电器区</h3>
+                <div class="Demo2_outside" v-for ='(item,index) in dianqi_val' >
+                    <div class="img_demo2">
+                        <img :src="item.pro_img" class="img_demo2">
+                    </div>
+                    <div class="pro_name_h">{{item.pro_name}}</div>
+                    <p>厂商:{{item.pro_brand}}</p>
+                    <p>产地:{{item.pro_place}}</p>
+                    <p>价格:{{item.pro_price}}</p>
+                    <button>
+                        <img src="img/xxk/sc.jpg" @click='pro_sc(item.pro_img,item.pro_name,item.pro_brand,item.pro_place,item.pro_num,item.pro_price)'>
+                    </button>
+                    <!-- 添加组件并加上监听器 v-on 为监听器 -->
+                    <list-button :item='item' v-on:cli1="pro_gw_zj">
+                    </list-button>
+
+                </div>
+            </div>
+            <div v-show="curId==3" class="div1">
+                <div style="min-height: 400px;">
+                    <h3>购物车</h3>
+                    <div class="div_DHL" >
+                        <span v-for = 'value in DHL_val'>{{value}}</span>
+                    </div>
+                    <div class="div-oustside" style=";" v-for='(item,index) in total_val' :item='item'>
+                    <!-- @click="item.select=!item.select" -->
+                        <input type="checkbox" class='chec_li' v-model='item.pro_checked' @click="selectItem(item)" >
+                        <div class="img" style="margin-left: 30px;">
+                            <!-- <img :src="item.split(',')[1]" class="img"> -->
+                            <img :src='item.pro_img'class="img" >
+                        </div>
+
+                        <div class="value_div" style="margin-left: 110px;">
+                            <h6>{{item.pro_name}}</h6>
+                            <p>{{item.pro_brand}}</p>
+                            <p>{{item.pro_place}}</p>
+                        </div>
+                        <div class="price_div">
+                            {{item.pro_price}}
+                        </div>
+                        <div class="price_num">
+                            <div class="price_num_1" @click="item.pro_num>0?item.pro_num--:''">-</div>
+                            <input type="text" class="price_num_input" :style="parseInt(item.pro_num) > 0 ? {color: 'black'} : item.pro_num=0" v-model='item.pro_num'>
+                            <div class="price_num_2" @click='item.pro_num++'>+</div>
+                        </div>
+                        <div class="price_total">
+                            ￥{{item.pro_price*item.pro_num}}
+                        </div>
+                        <div class="caozuo"  @click="delete2">删除</div>
+                    </div>
+                </div>
+                <div style="position: relative;bottom: 0px;">
+                    <label style="position: absolute; left:7px;cursor: pointer;" >
+                        <input type="checkbox"  v-model="qx_state" v-on:click="select_check(qx_state)">
+                        <span style="color: #09f;">全选</span>
+                    </label>
+                    <h4 style="position: relative; left: 110px;">合 计:</h4>
+                    <span class="hj">
+                        <p>共</p>
+                        <p style="color: red;font-size: 18px; margin-top: 15px;">{{all_total_price.ftn}}</p>
+                        <p>件商品，总价为：￥</p>
+                        <p style="color: red;font-size: 18px; margin-top: 15px;">{{all_total_price.ftp}}</p>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 组件 购买弹窗 -->
+    <template id="list-MB" >
+        <div>
+            <button @click="toggle()" class="gw_btn"><img src="img/xxk/gouwuche.jpg"></button>
+                <div class="MB"  v-show='isShow'>
+                    <div class='MBvalue'>
+                        <button class="button_x" @click="toggle()">X</button>
+                        <div class="img_demo2">
+                            <img :src="item.pro_img" class="img_demo2">
+                        </div>
+                        <table>
+                            <tr>
+                                <td> 商&nbsp;&nbsp;品&nbsp;&nbsp;名 :</td>
+                                <td>{{item.pro_name}}</td>
+                            </tr>
+                            <tr>
+                                <td>厂　　商：</td>
+                                <td>{{item.pro_brand}}</td>
+                            </tr>
+                            <tr>
+                                <td>产　　地 :</td>
+                                <td> {{item.pro_place}}</td>
+                            </tr>
+                            <tr>
+                                <td>价　　格 : </td>
+                                <td>{{item.pro_price}} </td>
+                            </tr>
+                            <tr>
+                                <td>购买数量： </td>
+                                <td>
+                                    <button @click="item.pro_num>0?item.pro_num--:''">-</button>
+                                    <!-- {{item.pro_num}} -->
+                                    <input type="text" class="num_input" :style="parseInt(item.pro_num) > 0 ? {color: 'black'} : item.pro_num=0" v-model='item.pro_num'>
+                                    <button @click='item.pro_num++'>+</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td> 合　　计 : </td>
+                                <td>￥{{item.pro_price*item.pro_num}} </td>
+                            </tr>
+                        </table>
+                        <div class="GM1" @click='pro_gm(item.pro_img,item.pro_name,item.pro_brand,item.pro_place,item.pro_num,item.pro_price)'>购　　买</div>
+                    </div>
+                </div>
+        </div>
+    </template>
+</body>
+<script src="../js/vue.min.js"></script>
+<script>
+    // 组件
+    Vue.component('list-button', {
+            template: '#list-MB',
+            props: ['item'],
+            methods: {
+                toggle() {
+                    this.isShow = !this.isShow;
+                },
+                pro_gm(a,b,c,d,e,f){
+                    // total_val  是一个数组
+                    // 需要的结果是将 a、b、c、d四个参数追加到数组里去，
+                    // pro_name ==> a pro_img  ==> b pro_num  ==> c pro_price==> d
+                    // @click='pro_gm(item.pro_img,item.pro_name,item.pro_brand,item.pro_place,item.pro_num,item.pro_price)'
+                    var arr ={
+                        'pro_img':a,
+                        'pro_name':b,
+                        'pro_brand':c,
+                        'pro_place':d,
+                        'pro_num':e,
+                        'pro_price':f,
+                        'pro_checked':true,
+                    }
+                    this.$emit("cli1",arr);  //利用$emit触发组件的监听器，回传数据
+                    this.isShow = !this.isShow;
+
+                },
+            },
+            data() {
+                return {
+                    isShow: false,
+                }
+            },
+        })
+    new Vue({
+        el: '#tab',
+        data: {
+            curId: 0,
+            qx_state:true,
+            DHL_val:['商 品','价 格','数 量','合 计'],
+            food_value: [
+                {
+                    'pro_name': '【汉堡】高热 | 鸡肉汉堡',//产品名称
+                    'pro_brand': 'Trust.Believe',//品牌名称
+                    'pro_place': '中国',//产地
+                    'pro_num': 3,//数量
+                    'pro_img': 'img/xxk/food1.jpg',//图片链接
+                    'pro_price': 800,//单价
+                     
+                },
+                {
+                    'pro_name': '【烤肠】中等 | 茄汁烤肠',//产品名称
+                    'pro_brand': 'Trust.Believe',//品牌名称
+                    'pro_place': '中国',//产地
+                    'pro_num': 3,//数量
+                    'pro_img': 'img/xxk/food2.jpg',//图片链接
+                    'pro_price': 800,//单价
+                    
+                },
+                {
+                    'pro_name': '【寿司】低热 | 鱼子寿司',//产品名称
+                    'pro_brand': 'Trust.Believe',//品牌名称
+                    'pro_place': '中国',//产地
+                    'pro_num': 3,//数量
+                    'pro_img': 'img/xxk/food3.jpg',//图片链接
+                    'pro_price': 800,//单价
+                    
+                },
+                {
+                    'pro_name': '【包子】低热 | 榨菜咸肉',//产品名称
+                    'pro_brand': 'Trust.Believe',//品牌名称
+                    'pro_place': '中国',//产地
+                    'pro_num': 3,//数量
+                    'pro_img': 'img/xxk/food4.jpg',//图片链接
+                    'pro_price': 800,//单价
+                    
+                }
+            ],
+            cloes_val:[
+                {
+                    'pro_name': '阿木好',//产品名称
+                    'pro_brand': 'Trust.Believe',//品牌名称
+                    'pro_place': '中国',//产地
+                    'pro_num': 1,//数量
+                    'pro_img': 'img/xxk/food1.jpg',//图片链接
+                    'pro_price': 600,//单价
+                    
+                },
+                {
+                    'pro_name': ' 兰瑟德',//产品名称
+                    'pro_brand': 'Trust.Believe',//品牌名称
+                    'pro_place': '中国',//产地
+                    'pro_num': 1,//数量
+                    'pro_img': 'img/xxk/food2.jpg',//图片链接
+                    'pro_price': 700,//单价
+                    
+                },
+                {
+                    'pro_name': ' 迪拜大厦',//产品名称
+                    'pro_brand': 'Trust.Believe',//品牌名称
+                    'pro_place': '中国',//产地
+                    'pro_num': 1,//数量
+                    'pro_img': 'img/xxk/food3.jpg',//图片链接
+                    'pro_price': 800,//单价
+                    
+                },
+                {
+                    'pro_name': '英式塔楼',//产品名称
+                    'pro_brand': 'Trust.Believe',//品牌名称
+                    'pro_place': '中国',//产地
+                    'pro_num': 1,//数量
+                    'pro_img': 'img/xxk/food4.jpg',//图片链接
+                    'pro_price': 900,//单价
+                    
+                },
+                {
+                    'pro_name': '兰瑟德',//产品名称
+                    'pro_brand': 'Trust.Believe',//品牌名称
+                    'pro_place': '中国',//产地
+                    'pro_num': 1,//数量
+                    'pro_img': 'img/xxk/food2.jpg',//图片链接
+                    'pro_price': 400,//单价
+                    
+                },
+            ],
+            dianqi_val:[
+                {
+                    'pro_name': '斯奥电脑',//产品名称
+                    'pro_brand': 'Trust.Believe',//品牌名称
+                    'pro_place': '中国',//产地
+                    'pro_num': 1,//数量
+                    'pro_img': 'img/xxk/dq1.jpg',//图片链接
+                    'pro_price': 1000,//单价
+                    
+                },
+                {
+                    'pro_name': ' 多的冰箱',//产品名称
+                    'pro_brand': 'Trust.Believe',//品牌名称
+                    'pro_place': '中国',//产地
+                    'pro_num': 1,//数量
+                    'pro_img': 'img/xxk/dq2.jpg',//图片链接
+                    'pro_price': 3010,//单价
+                    
+                },
+                {
+                    'pro_name': ' 凯斯洗衣机',//产品名称
+                    'pro_brand': 'Trust.Believe',//品牌名称
+                    'pro_place': '中国',//产地
+                    'pro_num': 1,//数量
+                    'pro_img': 'img/xxk/dq3.jpg',//图片链接
+                    'pro_price': 8100,//单价
+                    
+                },
+                {
+                    'pro_name': '开家微波炉',//产品名称
+                    'pro_brand': 'Trust.Believe',//品牌名称
+                    'pro_place': '中国',//产地
+                    'pro_num': 1,//数量
+                    'pro_img': 'img/xxk/dq4.jpg',//图片链接
+                    'pro_price': 910,//单价
+                    
+                },
+                {
+                    'pro_name': '兰瑟热水器',//产品名称
+                    'pro_brand': 'Trust.Believe',//品牌名称
+                    'pro_place': '中国',//产地
+                    'pro_num': 1,//数量
+                    'pro_img': 'img/xxk/dq5.jpg',//图片链接
+                    'pro_price': 4000,//单价
+                    
+                },
+            ],
+            total_val:[
+            ]
+        },
+        // 实时计算
+        computed: {
+            food_total_price:function () {
+                // 根据对象的元素获取对象
+                var ft = this.food_value.filter(function (val) {return val.pro_name});
+                var ftp=0,ftn=0;
+                for(var i=0,len=ft.length;i<len;i++){
+                    ftn+=parseInt([ft[i].pro_num]);
+                    ftp+=ft[i].pro_num*ft[i].pro_price;
+                }
+                return {ftp:ftp,ftn:ftn};
+            },
+            all_total_price:function () {
+                // 根据对象的元素获取对象
+                var ft = this.total_val.filter(function (val) {return val.pro_name});
+                var ftp=0,ftn=0;
+                for(var i=0,len=ft.length;i<len;i++){
+                    ftn+=parseInt([ft[i].pro_num]);
+                    ftp+=ft[i].pro_num*ft[i].pro_price;
+                }
+                return {ftp:ftp,ftn:ftn};
+            },
+        },
+        methods: {
+            // delete关键词不能直接做方法名
+            delete1:function (index) {
+               this.food_value.splice(index,1);
+            },
+            delete2:function (index) {
+               this.total_val.splice(index,1);
+            },
+            pro_gw_zj:function (val) {
+                this.total_val.push(val);
+                this.curId=3;
+                this.qx_state = true;
+                //为total_val添加select（是否选中）字段，初始值为true
+                var _this=this;
+                this.total_val.map(function (item){
+                    _this.$set(item, 'select',true);
+                })
+            },
+            // 全选
+            // 注意CheckBox一开始的状态，选中时，进入判断应该反着来做事件
+            select_check:function (state) {
+                this.total_val.forEach(function(item){
+                        item.pro_checked=!state;
+                        item.select = !state;
+                    });
+                // if(!state){
+                //     this.total_val.forEach(function(item){
+                //         item.pro_checked=true;
+                //         item.select = true;
+                //     });
+                // }else{
+                //     //相反，如果没有被选中，子集应该全部checked=false
+                //     this.total_val.forEach(function(item){
+                //         item.pro_checked = false;
+                //         item.select = false;
+                //     });
+
+                // }
+            },
+            // 当全部未被选中时，子项CheckBox只要有一个被选中，全选的按钮需要被选中
+            selectItem:function (item) {
+                item.select=!item.select;
+                if (!item.pro_checked) {
+                    this.qx_state = true;
+                }
+            }
+        },
+        // 钩子函数
+        // mounted: function () {
+        //     var _this=this;
+        //     //为productList添加select（是否选中）字段，初始值为true
+        //     this.total_val.map(function (item) {
+        //         _this.$set(item, 'select',true);
+        //     })
+        // }
+    })
+</script>
+</html>
